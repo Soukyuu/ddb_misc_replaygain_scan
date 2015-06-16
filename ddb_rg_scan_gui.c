@@ -349,13 +349,22 @@ rg_scan_run_cb (void *data) {
                         int n = 0;
                         DB_playItem_t *it = deadbeef->pl_get_first (PL_MAIN);
                         while (it) {
+                            DB_playItem_t *next = deadbeef->pl_get_next (it, PL_MAIN);
+                            deadbeef->pl_item_unref (it);
+                            deadbeef->pl_lock ();
+                            if (!deadbeef->is_local_file (deadbeef->pl_find_meta (it, ":URI"))) {
+                                fprintf (stderr, "rg scan: %s is not a local file, skipped\n", deadbeef->pl_find_meta (it, ":URI"));
+                                deadbeef->pl_unlock ();
+                                scan->num_items -= 1;
+                                it = next;
+                                continue;
+                            }
+                            deadbeef->pl_unlock ();
                             if (deadbeef->pl_is_selected (it)) {
                                 assert (n < scan->num_items);
                                 deadbeef->pl_item_ref (it);
                                 scan->scan_items[n++] = it;
                             }
-                            DB_playItem_t *next = deadbeef->pl_get_next (it, PL_MAIN);
-                            deadbeef->pl_item_unref (it);
                             it = next;
                         }
                     }
@@ -455,13 +464,22 @@ rg_remove_run_cb (void *data) {
                             int n = 0;
                             DB_playItem_t *it = deadbeef->pl_get_first (PL_MAIN);
                             while (it) {
+                                DB_playItem_t *next = deadbeef->pl_get_next (it, PL_MAIN);
+                                deadbeef->pl_item_unref (it);
+                                deadbeef->pl_lock ();
+                                if (!deadbeef->is_local_file (deadbeef->pl_find_meta (it, ":URI"))) {
+                                    fprintf (stderr, "rg scan: %s is not a local file, skipped\n", deadbeef->pl_find_meta (it, ":URI"));
+                                    deadbeef->pl_unlock ();
+                                    work->num_items -= 1;
+                                    it = next;
+                                    continue;
+                                }
+                                deadbeef->pl_unlock ();
                                 if (deadbeef->pl_is_selected (it)) {
                                     assert (n < work->num_items);
                                     deadbeef->pl_item_ref (it);
                                     work->scan_items[n++] = it;
                                 }
-                                DB_playItem_t *next = deadbeef->pl_get_next (it, PL_MAIN);
-                                deadbeef->pl_item_unref (it);
                                 it = next;
                             }
                         }
