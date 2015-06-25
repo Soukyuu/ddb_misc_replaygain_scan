@@ -120,6 +120,20 @@ rg_cleanup () {
     trace ("rg scan: cleaning complete, exiting\n");
 }
 
+
+static gboolean
+destroy_progress_cb (gpointer ctx) {
+    gtk_widget_destroy (ctx);
+    return FALSE;
+}
+
+static gboolean
+destroy_results_cb (gpointer ctx) {
+    gtk_widget_destroy (ctx);
+    rg_cleanup ();
+    return FALSE;
+}
+
 void
 on_scan_progress_cancel (GtkDialog *dialog, gint response_id, gpointer user_data) {
     scanner_ctx_t *ctx = user_data;
@@ -139,18 +153,6 @@ update_progress_cb (gpointer ctx) {
     return FALSE;
 }
 
-static gboolean
-destroy_progress_cb (gpointer ctx) {
-    gtk_widget_destroy (ctx);
-    return FALSE;
-}
-
-static gboolean
-destroy_results_cb (gpointer ctx) {
-    gtk_widget_destroy (ctx);
-    rg_cleanup ();
-    return FALSE;
-}
 
 void
 on_btn_apply_rg_released (GtkButton *button, gpointer user_data)
@@ -175,6 +177,9 @@ on_btn_cancel_rg_released (GtkButton *button, gpointer user_data)
 {
     scanner_ctx_t *ctx = current_ctx;
     ctx->cancelled = 1;
+    for (int i = 0; i < ctx->num_items; ++i){
+        deadbeef->pl_item_unref (ctx->scan_items[i]);
+    }
     g_idle_add (destroy_results_cb, ctx->results);
 }
 
