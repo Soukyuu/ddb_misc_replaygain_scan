@@ -138,6 +138,7 @@ void
 on_scan_progress_cancel (GtkDialog *dialog, gint response_id, gpointer user_data) {
     scanner_ctx_t *ctx = user_data;
     ctx->cancelled = 1;
+    g_idle_add (destroy_progress_cb, ctx->progress);
 }
 
 
