@@ -2,7 +2,7 @@
 libEBUR128-based ReplayGain scanner plugin for the DeaDBeeF audio player
 
 This plugin allows calculating and writing ReplayGain tags for music files supported by DeaDBeeF. 
-It uses libEBUR128 as a backend, so it's a dependency.
+It uses libEBUR128 as a backend, and is included for easier compilation.
 
 Currently, only two actions are available:
 

@@ -2,10 +2,11 @@ PLUG_OUT?=ddb_misc_replaygain_scan.so
 GTK2_OUT?=ddb_misc_replaygain_scan_GTK2.so
 GTK3_OUT?=ddb_misc_replaygain_scan_GTK3.so
 
+PLUG_LIBS?=-lm
+
 GTK2_CFLAGS?=`pkg-config --cflags gtk+-2.0`
 GTK3_CFLAGS?=`pkg-config --cflags gtk+-3.0`
 
-PLUG_LIBS?=-lebur128
 GTK2_LIBS?=`pkg-config --libs gtk+-2.0`
 GTK3_LIBS?=`pkg-config --libs gtk+-3.0`
 
@@ -13,11 +14,11 @@ all: plugin gtk2 gtk3
 
 plugin: plugin.o
 	@echo "Linking the plugin"
-	@gcc -shared -o $(PLUG_OUT) ddb_misc_rg_scan.o $(PLUG_LIBS)
+	@gcc -shared -o $(PLUG_OUT) ddb_misc_rg_scan.o ebur128.o $(PLUG_LIBS)
 	@echo "Done!"
 plugin.o:
 	@echo "Compiling the plugin"
-	@gcc -std=c99 -shared -fPIC -O2 -Wall -c ddb_misc_rg_scan.c $(PLUG_LIBS)
+	@gcc -std=c99 -D_GNU_SOURCE -shared -fPIC -O2 -Wall -c -Iebur128 ddb_misc_rg_scan.c ebur128/ebur128.c $(PLUG_LIBS)
 	@echo "Done!"
 
 gtk2: misc-gtk2 ui-gtk2.o

@@ -414,7 +414,7 @@ static rg_scan_t plugin = {
                              "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
                              "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
                              "THE SOFTWARE.",
-    //.misc.plugin.website = "http://none.net",
+    .misc.plugin.website = "https://github.com/Soukyuu/ddb_misc_replaygain_scan",
     .rg_scan = rg_scan,
     .rg_apply = rg_apply,
     .rg_remove = rg_remove
