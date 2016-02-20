@@ -35,9 +35,6 @@
 //#define trace(...) { fprintf(stderr, __VA_ARGS__); }
 #define trace(fmt,...)
 
-/* number of parallel threads */
-#define MAX_RG_THREADS 16
-
 static rg_scan_t plugin;                    // our plugin structure
 static DB_functions_t *deadbeef;            // the deadbeef functions api
 
@@ -50,7 +47,7 @@ DB_plugin_t* ddb_misc_replaygain_scan_load (DB_functions_t *api) {
 struct rg_thread_arg
 {
     int result;                     /* result of this thread */
-    const int thread_id;                  /* number of this thread */
+    const int thread_id;            /* number of this thread */
     DB_playItem_t **scan_items;     /* tracks to scan */
     float *out_track_rg;            /* individual track replay gain */
     float *out_track_pk;            /* indivirual track peak */
@@ -287,8 +284,16 @@ int rg_scan (DB_playItem_t **scan_items,     // tracks to scan
              float *out_album_rg,            // album track replay gain
              float *out_album_pk,            // album peak
              float *targetdb,                // our target loudness
+             int *num_threads,               // number of threads
              int *abort)                     // will be set to 1 if scanning was aborted
 {
+    if(*num_threads <= 0)
+    {
+        *num_threads = 1;
+    }
+
+    trace("rg scan: using %d thread(s)\n", *num_threads);
+
     ebur128_state **status_gain = NULL;
     ebur128_state **status_peak = NULL;
     double loudness;
@@ -309,10 +314,10 @@ int rg_scan (DB_playItem_t **scan_items,     // tracks to scan
     // calculate gain for each track
     for(int i = 0; i < *num_tracks; ++i){
         /* limit number of parallel threads */
-        if(i >= MAX_RG_THREADS)
+        if(i >= *num_threads)
         {
             /* simple blocking mechanism: join 'oldest' thread */
-            deadbeef->thread_join(rg_threads[i - MAX_RG_THREADS]);
+            deadbeef->thread_join(rg_threads[i - *num_threads]);
         }
         /* initialize arguments */
         args[i].result = 0;
@@ -331,7 +336,7 @@ int rg_scan (DB_playItem_t **scan_items,     // tracks to scan
     }
 
     /* wait for remaining threads to join */
-    int remaining_thread_id = (*num_tracks) - MAX_RG_THREADS;
+    int remaining_thread_id = (*num_tracks) - *num_threads;
     if(remaining_thread_id < 0)
     {
         remaining_thread_id = 0;
