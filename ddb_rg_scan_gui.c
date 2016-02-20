@@ -30,6 +30,7 @@
 #include <deadbeef/deadbeef.h>
 #include <deadbeef/gtkui_api.h>
 
+#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -53,7 +54,8 @@ enum // used to populate results dialog
 } ;
 
 static const char settings_dlg[] =
-    "property \"Target db volume level\" entry rgscan.target 89.0;\n"
+    "property \"Target db volume level\" entry rgscan.target 89.0;\n" \
+    "property \"Number of threads (0 = auto)\" entry rgscan.num_threads 0;\n"
 ;
 
 typedef struct {
@@ -73,6 +75,7 @@ typedef struct {
 
     float targetdb;
     int num_items;
+    int num_threads;
     int cancelled;
 
 } scanner_ctx_t;
@@ -303,7 +306,7 @@ scanner_worker (void *ctx) {
 
     int result = -1;
 
-    result = scanner_plugin->rg_scan (scan->scan_items, &scan->num_items, scan->track_gain, scan->track_peak, scan->album_gain, scan->album_peak, &scan->targetdb, &scan->cancelled);
+    result = scanner_plugin->rg_scan (scan->scan_items, &scan->num_items, scan->track_gain, scan->track_peak, scan->album_gain, scan->album_peak, &scan->targetdb, &scan->num_threads, &scan->cancelled);
 
     if (result == 0)
     {
@@ -382,6 +385,18 @@ rg_scan_run_cb (void *data) {
     deadbeef->pl_unlock ();
 
     scan->targetdb = deadbeef->conf_get_float ("rgscan.target", 89);
+    scan->num_threads = deadbeef->conf_get_int("rgscan.num_threads", 0);
+
+    /* define number of threads for rg_scan */
+    if(scan->num_threads == 0)
+    {
+        long num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+        if(num_cores <= 0)
+        {
+            num_cores = 1;
+        }
+        scan->num_threads = num_cores;
+    }
 
     GtkWidget *progress = gtk_dialog_new_with_buttons (_("Scanning..."), GTK_WINDOW (gtkui_plugin->get_mainwin ()), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
     GtkWidget *vbox = gtk_dialog_get_content_area (GTK_DIALOG (progress));

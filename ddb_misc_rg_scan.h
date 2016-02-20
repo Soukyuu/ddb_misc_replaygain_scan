@@ -39,6 +39,7 @@ typedef struct{
                     float *out_album_rg,            // album track replay gain
                     float *out_album_pk,            // album peak
                     float *targetdb,                // our target loudness
+                    int *num_threads,               // number of threads
                     int *abort);                    // will be set to 1 if scanning was aborted
 
     int (*rg_apply) (DB_playItem_t *track,
