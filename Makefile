@@ -27,56 +27,56 @@ plugin.o:
 
 gtk2: misc-gtk2 ui-gtk2.o
 	@echo "Linking the GTK2 UI plugin"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $(GTK2_OUT) ddb_rg_scan_gui.o interface.o callbacks.o support.o $(GTK2_LIBS)
+	@$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $(GTK2_OUT) ddb_rg_scan_gui-gtk2.o interface-gtk2.o callbacks-gtk2.o support-gtk2.o $(GTK2_LIBS)
 	@echo "Done!"
 
 gtk3: misc-gtk3 ui-gtk3.o
 	@echo "Linking the GTK3 UI plugin"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $(GTK3_OUT) ddb_rg_scan_gui.o interface.o callbacks.o support.o $(GTK3_LIBS)
+	@$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $(GTK3_OUT) ddb_rg_scan_gui-gtk3.o interface-gtk3.o callbacks-gtk3.o support-gtk3.o $(GTK3_LIBS)
 	@echo "Done!"
 	
 ui-gtk2.o:
 	@echo "Compiling the GTK2 UI plugin"
-	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c ddb_rg_scan_gui.c
+	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c ddb_rg_scan_gui.c -o ddb_rg_scan_gui-gtk2.o
 	@echo "Done!"
 	
 ui-gtk3.o:
 	@echo "Compiling the GTK3 UI plugin"
-	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c ddb_rg_scan_gui.c
+	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c ddb_rg_scan_gui.c -o ddb_rg_scan_gui-gtk3.o
 	@echo "Done!"
 
-misc-gtk2: interface.o-gtk2 callbacks.o-gtk2 support.o-gtk2
+misc-gtk2: interface-gtk2.o callbacks-gtk2.o support-gtk2.o
 
-interface.o-gtk2:
+interface-gtk2.o:
 	@echo "Compiling interface.o"
-	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c interface.c
+	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c interface.c -o interface-gtk2.o
 	@echo "Done!"
 
-callbacks.o-gtk2:
+callbacks-gtk2.o:
 	@echo "Compiling callbacks.o"
-	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c callbacks.c
+	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c callbacks.c -o callbacks-gtk2.o
 	@echo "Done!"
 
-support.o-gtk2:
+support-gtk2.o:
 	@echo "Compiling support.o"
-	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c support.c
+	@$(CC) $(CFLAGS) $(GTK2_CFLAGS) -c support.c -o support-gtk2.o
 	@echo "Done!"
 	
-misc-gtk3: interface.o-gtk3 callbacks.o-gtk3 support.o-gtk3
+misc-gtk3: interface-gtk3.o callbacks-gtk3.o support-gtk3.o
 
-interface.o-gtk3:
+interface-gtk3.o:
 	@echo "Compiling interface.o"
-	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c interface.c
+	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c interface.c -o interface-gtk3.o
 	@echo "Done!"
 
-callbacks.o-gtk3:
+callbacks-gtk3.o:
 	@echo "Compiling callbacks.o"
-	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c callbacks.c
+	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c callbacks.c -o callbacks-gtk3.o
 	@echo "Done!"
 
-support.o-gtk3:
+support-gtk3.o:
 	@echo "Compiling support.o"
-	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c support.c
+	@$(CC) $(CFLAGS) $(GTK3_CFLAGS) -c support.c -o support-gtk3.o
 	@echo "Done!"
 
 clean:
